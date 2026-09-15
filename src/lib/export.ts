@@ -32,6 +32,7 @@ export async function buildPptx(items: CaptureItem[], template: Template, title:
       slide.addText(item.title, {x:tx, y:ty, w:tw, h:count === 1 ? 0.85 : 0.32, fontSize:count === 1 ? 20 : 12, bold:true, color:'1D2724', fit:'shrink'});
       slide.addText(item.url, {x:tx, y:ty + (count === 1 ? 1 : 0.35), w:tw, h:0.3, fontSize:9, color:'427253', ...(item.url ? {hyperlink:{url:item.url}} : {}), fit:'shrink'});
       if (count !== 4) slide.addText(item.note || ' ', {x:tx, y:ty + (count === 1 ? 1.7 : 0.7), w:tw, h:count === 1 ? 2.2 : 0.2, fontSize:11, color:'66716B', fit:'shrink'});
+      if (count === 1) slide.addText(`${item.capturedAt ? new Date(item.capturedAt).toLocaleString('ko-KR') : ''}${item.httpStatus ? `\nHTTP ${item.httpStatus}` : ''}`, {x:tx,y:y+4.85,w:tw,h:0.5,fontSize:9,color:'748078',fit:'shrink'});
     });
     slide.addText(`${start + 1}–${Math.min(start + count, items.length)} / ${items.length}   ·   ${new Date().toLocaleDateString('ko-KR')}`, {x:0.5,y:7.12,w:12.33,h:0.18,fontSize:8,color:'748078'});
   }
@@ -45,7 +46,7 @@ export async function buildXlsx(items: CaptureItem[], title: string) {
   sheet.getRow(1).height = 32;
   sheet.getRow(1).eachCell(cell => {cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF1C2822'}};cell.font={bold:true,color:{argb:'FFFFFFFF'}};cell.alignment={vertical:'middle'};});
   for (const item of items) {
-    const row = sheet.addRow({title:item.title,url:{text:item.url,hyperlink:item.url},date:item.capturedAt || '',status:item.httpStatus || '',note:item.note});
+    const row = sheet.addRow({title:item.title,url:item.url ? {text:item.url,hyperlink:item.url} : '',date:item.capturedAt || '',status:item.httpStatus || '',note:item.note});
     row.height = 150;
     row.eachCell(cell=>{cell.alignment={vertical:'middle',wrapText:true};cell.font={size:11,color:{argb:'FF293E32'}};});
     if (item.image) {

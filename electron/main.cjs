@@ -49,7 +49,7 @@ app.whenReady().then(async()=>{
         if(closing)return;event.preventDefault();closing=true;
         try{
           const id=createHash('sha256').update(url.origin).digest('hex').slice(0,24);
-          const cookies=(await loginSession.cookies.get({})).map(c=>({name:c.name,value:c.value,domain:c.domain,path:c.path,expires:c.expirationDate||-1,httpOnly:c.httpOnly,secure:c.secure,sameSite:c.sameSite==='strict'?'Strict':c.sameSite==='lax'?'Lax':'None'}));
+          const cookies=(await loginSession.cookies.get({})).map(c=>({name:c.name,value:c.value,domain:c.domain,path:c.path,expires:c.expirationDate||-1,httpOnly:c.httpOnly,secure:c.secure,sameSite:c.sameSite==='strict'?'Strict':c.sameSite==='no_restriction'?'None':'Lax'}));
           let origins=[];
           if(new URL(login.webContents.getURL()).origin===url.origin){const localStorage=await login.webContents.executeJavaScript('Object.entries(localStorage).map(([name,value])=>({name,value}))');origins=[{origin:url.origin,localStorage}];}
           const record={id,origin:url.origin,updatedAt:new Date().toISOString(),state:{cookies,origins}};
