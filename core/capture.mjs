@@ -15,10 +15,10 @@ export function validateOptions(options){
   if(options.mode==='selector'&&(typeof options.selector!=='string'||!options.selector.trim()||options.selector.length>500))throw new Error('CSS 선택자를 입력해 주세요.');
   return {...options,concurrency:Math.min(6,Math.max(1,Number(options.concurrency)||3))};
 }
-export async function launchBrowser({headless=true}={}){
+export async function launchBrowser({headless=true,chromiumSandbox=true}={}){
   const bundled=chromium.executablePath();
-  if(existsSync(bundled))return chromium.launch({headless,chromiumSandbox:true});
-  try{return await chromium.launch({channel:'chrome',headless,chromiumSandbox:true});}
+  if(existsSync(bundled))return chromium.launch({headless,chromiumSandbox});
+  try{return await chromium.launch({channel:'chrome',headless,chromiumSandbox});}
   catch{throw new Error('캡처 브라우저가 없습니다. Google Chrome을 설치하거나 프로젝트에서 npx playwright install chromium을 실행해 주세요.');}
 }
 export async function cleanPage(page){
@@ -57,6 +57,7 @@ async function screenshotPage(page,url,options){
 }
 export class CaptureEngine{
   browser=null;queue=null;cancelled=false;busy=false;
+  constructor({chromiumSandbox=true}={}){this.chromiumSandbox=chromiumSandbox;}
   async run(items,rawOptions,onProgress,session){
     if(this.busy)throw new Error('이미 캡처가 진행 중입니다.');
     if(!Array.isArray(items)||!items.length||items.length>300)throw new Error('1~300개 URL을 입력해 주세요.');
@@ -64,7 +65,7 @@ export class CaptureEngine{
     items.forEach(item=>{if(typeof item.id!=='string'||item.id.length>128)throw new Error('작업 ID가 올바르지 않습니다.');validateUrl(item.url);});
     this.busy=true;this.cancelled=false;
     try{
-      this.browser=await launchBrowser();this.queue=new PQueue({concurrency:options.concurrency});
+      this.browser=await launchBrowser({chromiumSandbox:this.chromiumSandbox});this.queue=new PQueue({concurrency:options.concurrency});
       await Promise.all(items.map(item=>this.queue.add(async()=>{
         if(this.cancelled){onProgress({id:item.id,status:'queued'});return;}
         onProgress({id:item.id,status:'capturing',error:undefined});

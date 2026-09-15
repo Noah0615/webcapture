@@ -13,7 +13,9 @@ test('capture engine handles real viewport, clean capture, selector and failed p
   await new Promise<void>(resolve=>server.listen(0,'127.0.0.1',resolve));
   const address=server.address() as {port:number};const base=`http://127.0.0.1:${address.port}`;
   try{
-    const engine=new CaptureEngine();const result:any[]=[];
+    // GitHub's hosted Ubuntu runner disables the user namespace required by Chromium's sandbox.
+    // The production app keeps the sandbox enabled; only this fixture browser opts out.
+    const engine=new CaptureEngine({chromiumSandbox:false});const result:any[]=[];
     await engine.run([{id:'ok',url:base},{id:'fail',url:`${base}/missing`}],{mode:'viewport',device:'mobile',clean:true,concurrency:2},i=>result.push(i));
     const done=result.find(i=>i.id==='ok'&&i.status==='done');assert.ok(done);assert.equal(done.width,393);assert.equal(done.height,852);assert.equal(done.title,'Capture fixture');assert.ok(result.find(i=>i.id==='fail'&&i.status==='error'));
     const selected:any[]=[];await engine.run([{id:'selector',url:base}],{mode:'selector',device:'desktop',selector:'main',clean:true,concurrency:1},i=>selected.push(i));
