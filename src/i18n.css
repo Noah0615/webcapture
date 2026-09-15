@@ -1,4 +1,7 @@
 .language-toggle{position:fixed;top:17px;right:330px;z-index:21;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:#fff;color:var(--dark);border-radius:999px;padding:7px 11px;font-size:12px;font-weight:700;box-shadow:0 2px 8px rgba(22,33,28,.04)}
 .language-toggle:hover{border-color:#a7b49f;background:#f8faf6}
+.repository-link{position:fixed;top:17px;right:230px;z-index:21;display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border);background:#fff;color:var(--dark);border-radius:999px;padding:7px 11px;font-size:12px;font-weight:700;box-shadow:0 2px 8px rgba(22,33,28,.04)}
+.repository-link:hover{border-color:#a7b49f;background:#f8faf6}
 @media(max-width:1000px){.language-toggle{right:24px}}
-@media(max-width:580px){.language-toggle{top:14px;right:14px;padding:6px 9px}}
+@media(max-width:1000px){.repository-link{right:106px}}
+@media(max-width:580px){.language-toggle{top:14px;right:14px;padding:6px 9px}.repository-link{top:14px;right:92px;padding:6px 9px}}
